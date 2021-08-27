@@ -2,7 +2,7 @@ import requests
 import json
 
 
-adress = 'Архангельск ' + 'Троицкий, 51'
+adress = 'Архангеsdьс ' + 'Троицsкий, 51'
 url = f'http://search.maps.sputnik.ru/search?q={adress}'
 res = requests.get(url=url)
 

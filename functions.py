@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import json
 from lxml import html
 import time
-import re
 
 
 url = 'https://novosibirsk.n1.ru/kupit/kvartiry/?limit=30'
@@ -99,10 +98,20 @@ def get_flats_info(file):
             part_price = [s for s in part_price.split() if s.isdigit()] #переводим цену за метр квартиры из строки в число, убираем лишние знаки            
             part_price = ''.join(str(i) for i in part_price) #переводим цену за метр квартиры из строки в число, убираем лишние знаки
 
+
+            adress_to_bd = 'Новосибирск ' + adress
+            sputnik_api = f'http://search.maps.sputnik.ru/search?q={adress_to_bd}'
+            position_html = requests.get(url=sputnik_api)
+            position = json.loads(position_html.text)
+            try:
+                position_to_bd = (position['result'][0]['position']['lat'],position['result'][0]['position']['lon'])
+            except IndexError:
+                position_to_bd = 'Not defined'
+
             print('--------------------------------------------------------')
+            print('[INFO] Следующие данные будут записаны в базу данных')
             flat_url_to_bd = flat_url
-            print(flat_url_to_bd) # Урл адрес, который будет записан в БД
-            adress_to_bd = adress
+            print(flat_url_to_bd) # Урл адрес, который будет записан в БД                  
             print(adress_to_bd) # физический Адрес объекта, который будет записан в БД           
             try:
                 year_to_bd = str((f'{god[0]} кв. {god[2]} года')) 
@@ -119,7 +128,8 @@ def get_flats_info(file):
             price_to_bd = int(price)          
             print(price_to_bd) # Цена будет записана в бд
             part_price_to_bd = int(part_price)         
-            print(part_price_to_bd) # Цена за метр будет записана в БД       
+            print(part_price_to_bd) # Цена за метр будет записана в БД 
+            print(position_to_bd)      
             print('--------------------------------------------------------')
 
         
